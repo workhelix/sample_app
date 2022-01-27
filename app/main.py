@@ -26,10 +26,10 @@ def generate_sidebar_elements():
 
     st.sidebar.title("Contribute!")
     st.sidebar.info(
-        "WorkHelix Repo:"
-        "\n\n:question: [Issues]()"
-        "\n\n:handshake: [Pull Requests]()"
-        "\n\n:book: [Source Code]()"
+        "WorkHelix [Repo](https://github.com/workhelix/sample_app):"
+        "\n\n:question: [Issues](https://github.com/workhelix/sample_app/issues)"
+        "\n\n:handshake: [Pull Requests](https://github.com/workhelix/sample_app/pulls)"
+        "\n\n:book: [Source Code](https://github.com/workhelix/sample_app/tree/main/app)"
     )
 
     page = pages[selection]

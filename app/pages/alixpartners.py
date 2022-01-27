@@ -21,7 +21,7 @@ def run():
     df['dt'] = to_datetime(df['month'], format='%Y-%m')
     # relplot
     fig = plt.figure(figsize=(8, 5))
-    sns.relplot(x='ai_in', y='agg_sml', data=df)
+    sns.relplot(x='ai_in', y='agg_sml', hue='ticker', alpha=.3, data=df)
     st.pyplot()
 
     # plot plasma lineplot
@@ -59,16 +59,27 @@ def run():
     st.pyplot()
 
     # KDE Plot
+    # color palette as dictionary
+    palette = {"DHR": "tab:cyan",
+               "SWK": "tab:orange",
+               "IR": "tab:aquamarine",
+               "EMR": "tab:red",
+               "SPXC": "tab:yellow",
+               "HON": "tab:lightpink",
+               "ITW": "tab:blue",
+               "GE": "tab:indigo",
+               "MMM": "olive"}
+
     sns.kdeplot(x='agg_sml', y='agg_tele', hue='sector', data=df, legend=True)
-    sns.scatterplot(df[df.ticker == 'DHR'].agg_sml, df[df.ticker == 'DHR'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'SWK'].agg_sml, df[df.ticker == 'SWK'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'IR'].agg_sml, df[df.ticker == 'IR'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'EMR'].agg_sml, df[df.ticker == 'EMR'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'SPXC'].agg_sml, df[df.ticker == 'SPXC'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'HON'].agg_sml, df[df.ticker == 'HON'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'ITW'].agg_sml, df[df.ticker == 'ITW'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'GE'].agg_sml, df[df.ticker == 'GE'].agg_tele, markers=['o'], palette='deep')
-    sns.scatterplot(df[df.ticker == 'MMM'].agg_sml, df[df.ticker == 'MMM'].agg_tele, markers=['o'], palette='deep')
+    plt.scatter(df[df.ticker == 'DHR'].agg_sml, df[df.ticker == 'DHR'].agg_tele, alpha=.3, color="cyan")
+    plt.scatter(df[df.ticker == 'SWK'].agg_sml, df[df.ticker == 'SWK'].agg_tele, alpha=.3, color="orange")
+    plt.scatter(df[df.ticker == 'IR'].agg_sml, df[df.ticker == 'IR'].agg_tele, alpha=.3, color="aquamarine")
+    plt.scatter(df[df.ticker == 'EMR'].agg_sml, df[df.ticker == 'EMR'].agg_tele, alpha=.3, color="red")
+    plt.scatter(df[df.ticker == 'SPXC'].agg_sml, df[df.ticker == 'SPXC'].agg_tele, alpha=.3, color="yellow")
+    plt.scatter(df[df.ticker == 'HON'].agg_sml, df[df.ticker == 'HON'].agg_tele, alpha=.3, color="lightpink")
+    plt.scatter(df[df.ticker == 'ITW'].agg_sml, df[df.ticker == 'ITW'].agg_tele, alpha=.3, color="blue")
+    plt.scatter(df[df.ticker == 'GE'].agg_sml, df[df.ticker == 'GE'].agg_tele, alpha=.3, color="indigo")
+    plt.scatter(df[df.ticker == 'MMM'].agg_sml, df[df.ticker == 'MMM'].agg_tele, alpha=.3, color="olive")
 
     plt.xlabel('ML Exposure Score')
     plt.ylabel('Remote Work Exposure Score')
