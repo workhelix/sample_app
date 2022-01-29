@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 from plotly import colors
 from pandas import DataFrame
-from typing import List, Dict
+from typing import List
 import streamlit as st
 from itertools import cycle
 
@@ -17,10 +17,10 @@ class Plotly:
         data: DataFrame,
         group: str,
         color_group: List[str] = colors.qualitative.Light24
-    ) -> dict[str, str]:
+    ):
         """
-        Returns a color coding for a given series (one color for every unique value). Will repeat colors if not enough are
-        provided.
+        Returns a color coding for a given series (one color for every unique value).
+        Will repeat colors if not enough are provided.
         """
         # get unique identifiers
         unique_series = data[group].unique()
@@ -85,8 +85,7 @@ class Plotly:
 
         traces = []
         traces.append(go.Histogram2dContour(x=data[x], y=data[y],
-                                            colorscale='Blues',
-                                            #xaxis=x, yaxis=y
+                                            colorscale='Blues'
                                             )
                       )
         if scatter:
