@@ -2,11 +2,11 @@ import streamlit as st
 import os.path as op
 from sys import path
 
-
 path.append(op.abspath(op.join(op.dirname(__file__), "..")))
 
 from app.pages import home
 from app.pages import alixpartners
+
 
 # Generate sidebar elements
 def generate_sidebar_elements():

@@ -3,6 +3,9 @@ from pathlib import Path
 from pandas import read_csv, DataFrame, to_datetime
 import seaborn as sns
 from matplotlib import pyplot as plt
+
+from ..utils.ploting_utils import Plotly
+
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
@@ -19,71 +22,74 @@ def read_data(path: str) -> DataFrame:
 def run():
     df = read_data("./docs/data/alixpartners_1_26_2022.csv")  # filtered data for size
     df['dt'] = to_datetime(df['month'], format='%Y-%m')
-    # relplot
-    fig = plt.figure(figsize=(8, 5))
-    sns.relplot(x='ai_in', y='agg_sml', hue='ticker', alpha=.3, data=df)
-    st.pyplot()
 
-    # plot plasma lineplot
+    st.header("Sample Analytics Capabilities")
+    st.markdown("The charts below are all interactive. To focus on a specific competitor, "
+                "simply toggle names on the legend to right of each chart.")
 
-    sns.lineplot(x='dt', y='ai_in', hue='ticker', data=df)
-    plt.ylabel('AI Hiring')
-    plt.xlabel('Date')
-    st.pyplot()
+    # Ai Exposure by Group
+    fig = Plotly()
+    fig.scatter(x='ai_in', y='agg_sml',
+                data=df, group='ticker',
+                title="Industry AI Exposure by Index")
 
-    # plot plasma lineplot noramalized
+    # Normalized Hiring
     df['normed_ai_in'] = df.groupby('ticker')['ai_in'].transform(lambda x: (x - x.mean()) / x.std())
-    sns.set_palette('plasma_r')
-    sns.lineplot(x='dt', y='normed_ai_in', hue='ticker', data=df, legend=True)
-    plt.ylabel('AI Hiring')
-    plt.xlabel('Date')
-    st.pyplot()
+    hiring_option = st.selectbox("Would you like to Normalize the data?", ('Standard', 'Normalized'))
+    if hiring_option == 'Standard':
+        fig = Plotly(mode='lines+markers')
+        fig.scatter(x='dt', y='ai_in',
+                    data=df, group='ticker',
+                    title=f"AI Hiring by Index, {hiring_option}",
+                    date=True)
+    else:
+        fig = Plotly(mode='lines+markers')
+        fig.scatter(x='dt', y='normed_ai_in',
+                    data=df, group='ticker',
+                    title=f"AI Hiring by Index, {hiring_option}",
+                    date=True)
 
-    # plot plasma lineplot noramalized
-    sns.lineplot(x='dt', y='agg_sml', hue='ticker', data=df, legend=True)
-    plt.ylabel('Machine Learning Exposure Score (Raw)')
-    plt.xlabel('Date')
-    st.pyplot()
+    # SML Line Plot
+    fig = Plotly('lines+markers')
+    fig.scatter(x='dt', y='agg_sml',
+                data=df, group='ticker',
+                title='Machine Learning Exposure Score Over Time by Index',
+                date=True)
 
     # remote work
-    plt.ylabel('Remote Work Potential Score (Raw)')
-    plt.xlabel('Date')
-    sns.lineplot(x='dt', y='agg_tele', hue='ticker', data=df, legend=True)
-    st.pyplot()
+    fig = Plotly("lines+markers")
+    fig.scatter(x='dt', y='agg_tele',
+                data=df, group='ticker',
+                title='Remote Work Trends Over Time by Index',
+                date=True)
 
-    # ML Exposure
-    g = sns.relplot(x='agg_sml', y='agg_tele', hue='ticker', data=df, legend=True)
-    plt.xlabel('ML Exposure Score')
-    plt.ylabel('Remote Work Exposure Score')
-    #g._legend.remove()
-    st.pyplot()
+    # ML Exposure x Remote Work
+    fig = Plotly()
+    fig.scatter(x='agg_sml', y='agg_tele',
+                data=df, group='ticker',
+                title='ML Exposure Score as Compared to Remote Work Score by Index',
+                date=True)
 
-    # KDE Plot
-    # color palette as dictionary
-    palette = {"DHR": "tab:cyan",
-               "SWK": "tab:orange",
-               "IR": "tab:aquamarine",
-               "EMR": "tab:red",
-               "SPXC": "tab:yellow",
-               "HON": "tab:lightpink",
-               "ITW": "tab:blue",
-               "GE": "tab:indigo",
-               "MMM": "olive"}
-
-    sns.kdeplot(x='agg_sml', y='agg_tele', hue='sector', data=df, legend=True)
-    plt.scatter(df[df.ticker == 'DHR'].agg_sml, df[df.ticker == 'DHR'].agg_tele, alpha=.3, color="cyan")
-    plt.scatter(df[df.ticker == 'SWK'].agg_sml, df[df.ticker == 'SWK'].agg_tele, alpha=.3, color="orange")
-    plt.scatter(df[df.ticker == 'IR'].agg_sml, df[df.ticker == 'IR'].agg_tele, alpha=.3, color="aquamarine")
-    plt.scatter(df[df.ticker == 'EMR'].agg_sml, df[df.ticker == 'EMR'].agg_tele, alpha=.3, color="red")
-    plt.scatter(df[df.ticker == 'SPXC'].agg_sml, df[df.ticker == 'SPXC'].agg_tele, alpha=.3, color="yellow")
-    plt.scatter(df[df.ticker == 'HON'].agg_sml, df[df.ticker == 'HON'].agg_tele, alpha=.3, color="lightpink")
-    plt.scatter(df[df.ticker == 'ITW'].agg_sml, df[df.ticker == 'ITW'].agg_tele, alpha=.3, color="blue")
-    plt.scatter(df[df.ticker == 'GE'].agg_sml, df[df.ticker == 'GE'].agg_tele, alpha=.3, color="indigo")
-    plt.scatter(df[df.ticker == 'MMM'].agg_sml, df[df.ticker == 'MMM'].agg_tele, alpha=.3, color="olive")
-
-    plt.xlabel('ML Exposure Score')
-    plt.ylabel('Remote Work Exposure Score')
-    plt.title('Relative Technological Exposure')
-    plt.legend(['DHR', 'SWK', 'IR', 'EMR',
-                'SPXC', 'HON', 'ITW', 'GE', 'MMM'])
-    st.pyplot()
+    # Density Contour Plot
+    fig = Plotly()
+    fig.contour_plot(x='agg_sml', y='agg_tele',
+                     data=df, group='ticker',
+                     title='Remote Work Score As Compared to ML Exposure Score Contour Plot by Index',
+                     scatter=True)
+    # sns.kdeplot(x='agg_sml', y='agg_tele', hue='sector', data=df, legend=True)
+    # plt.scatter(df[df.ticker == 'DHR'].agg_sml, df[df.ticker == 'DHR'].agg_tele, alpha=.3, color="cyan")
+    # plt.scatter(df[df.ticker == 'SWK'].agg_sml, df[df.ticker == 'SWK'].agg_tele, alpha=.3, color="orange")
+    # plt.scatter(df[df.ticker == 'IR'].agg_sml, df[df.ticker == 'IR'].agg_tele, alpha=.3, color="aquamarine")
+    # plt.scatter(df[df.ticker == 'EMR'].agg_sml, df[df.ticker == 'EMR'].agg_tele, alpha=.3, color="red")
+    # plt.scatter(df[df.ticker == 'SPXC'].agg_sml, df[df.ticker == 'SPXC'].agg_tele, alpha=.3, color="yellow")
+    # plt.scatter(df[df.ticker == 'HON'].agg_sml, df[df.ticker == 'HON'].agg_tele, alpha=.3, color="lightpink")
+    # plt.scatter(df[df.ticker == 'ITW'].agg_sml, df[df.ticker == 'ITW'].agg_tele, alpha=.3, color="blue")
+    # plt.scatter(df[df.ticker == 'GE'].agg_sml, df[df.ticker == 'GE'].agg_tele, alpha=.3, color="indigo")
+    # plt.scatter(df[df.ticker == 'MMM'].agg_sml, df[df.ticker == 'MMM'].agg_tele, alpha=.3, color="olive")
+    #
+    # plt.xlabel('ML Exposure Score')
+    # plt.ylabel('Remote Work Exposure Score')
+    # plt.title('Relative Technological Exposure')
+    # plt.legend(['DHR', 'SWK', 'IR', 'EMR',
+    #             'SPXC', 'HON', 'ITW', 'GE', 'MMM'])
+    # st.pyplot()
